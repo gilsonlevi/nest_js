@@ -1,31 +1,22 @@
-import { Controller, Get, Param, Post, Redirect, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Redirect, Req } from '@nestjs/common';
 import { Request } from 'express';
-const Cats = [{id:1, nome:"Garfield"}, {id:2, nome:"Mingau"}]
+import { CatService } from './cat.service';
+import { Cat } from './intefaces/cat.interface';
+import { CreateCatDto } from './dto/create-cat.dto';
 
 @Controller('cat')
 export class CatController {
-    @Get(':id')
-    findOne(@Param() params: any): string {
-        const found = Cats.find((cat) => cat.id == params.id)
-        if(found == undefined){
-            return 'Cat not found'
-        }else {        
-            return `Here is the cat ${found.nome}`
-        }
-    }
+    constructor(private catService: CatService) { }
+
 
     @Post()
-    create(): string {
-        return 'A new cat was created';
-    }
-
-    @Get('ab*cd')
-    useWildcard() {
-        return 'This route uses a wildcard';
+    async create(@Body() createCatDto: CreateCatDto) {
+        console.log(createCatDto)
+        this.catService.create(createCatDto);
     }
 
     @Get()
-    findAll(@Req() request: Request): string {
-        return 'All cats'
+    async findAll(): Promise<Cat[]> {
+        return this.catService.findAll();
     }
 }
